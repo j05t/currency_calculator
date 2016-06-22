@@ -25,14 +25,31 @@ import javax.swing.SwingWorker;
 import jdk.nashorn.api.scripting.URLReader;
 
 import javax.swing.JProgressBar;
+import javax.swing.SwingConstants;
+import javax.swing.DefaultComboBoxModel;
+import java.awt.GridLayout;
+import javax.swing.BoxLayout;
+import java.awt.CardLayout;
+import java.awt.FlowLayout;
+import java.awt.GridBagLayout;
+import java.awt.GridBagConstraints;
+import java.awt.Window.Type;
+import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.Alignment;
+import javax.swing.JTextArea;
+import javax.swing.JTextPane;
+import javax.swing.JSeparator;
+import java.awt.Font;
 
 public class Gui {
 
-	private JFrame frame;
-	private JTextField txtLadenSieZuerst;
+	private JFrame frmWhrungsrechner;
 	private JProgressBar progressBar;
 	private JComboBox<Currency> source_currency;
 	private JComboBox<Currency> target_currency;
+	private JTextField text;
+	private JSeparator separator;
+	private JSeparator separator_1;
 
 	/**
 	 * Launch the application.
@@ -42,7 +59,7 @@ public class Gui {
 			public void run() {
 				try {
 					Gui window = new Gui();
-					window.frame.setVisible(true);
+					window.frmWhrungsrechner.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -61,43 +78,53 @@ public class Gui {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
-		frame = new JFrame();
-		frame.setBounds(100, 100, 450, 300);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frmWhrungsrechner = new JFrame();
+		frmWhrungsrechner.setTitle("Währungsrechner 0.1");
+		frmWhrungsrechner.setBounds(100, 100, 450, 300);
+		frmWhrungsrechner.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frmWhrungsrechner.getContentPane().setLayout(new BorderLayout(0, 0));
 
 		JPanel panel = new JPanel();
-		frame.getContentPane().add(panel, BorderLayout.NORTH);
-
-		JLabel lblNewLabel = new JLabel("Währung:");
-		panel.add(lblNewLabel);
-
-		source_currency = new JComboBox();
-		panel.add(source_currency);
-
-		JLabel lblZielwhrung = new JLabel("Zielwährung:");
-		panel.add(lblZielwhrung);
-
-		target_currency = new JComboBox();
-		panel.add(target_currency);
-
-		JPanel panel_1 = new JPanel();
-		frame.getContentPane().add(panel_1, BorderLayout.SOUTH);
-
-		JButton btnNewButton = new JButton("Laden");
-		btnNewButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				loadCurrencies();
-			}
-		});
-
-		progressBar = new JProgressBar();
-		panel_1.add(progressBar);
-		panel_1.add(btnNewButton);
-
-		txtLadenSieZuerst = new JTextField();
-		txtLadenSieZuerst.setText("Laden Sie zuerst die aktuellen Umrechnungskurse.");
-		frame.getContentPane().add(txtLadenSieZuerst, BorderLayout.CENTER);
-		txtLadenSieZuerst.setColumns(10);
+		frmWhrungsrechner.getContentPane().add(panel);
+						panel.setLayout(new GridLayout(0, 1, 0, 0));
+				
+						JLabel lblNewLabel = new JLabel("Währung:");
+						panel.add(lblNewLabel);
+						
+								source_currency = new JComboBox();
+								panel.add(source_currency);
+				
+						JLabel lblZielwhrung = new JLabel("Zielwährung:");
+						panel.add(lblZielwhrung);
+						
+								target_currency = new JComboBox();
+								target_currency.setModel(new DefaultComboBoxModel(new String[] {"                                                            "}));
+								panel.add(target_currency);
+						
+						separator = new JSeparator();
+						panel.add(separator);
+						
+						text = new JTextField();
+						text.setFont(new Font("Dialog", Font.PLAIN, 14));
+						text.setHorizontalAlignment(SwingConstants.CENTER);
+						text.setText("Laden Sie zuerst die aktuellen Umrechnungskurse.");
+						text.setEditable(false);
+						panel.add(text);
+						text.setColumns(10);
+										
+										separator_1 = new JSeparator();
+										panel.add(separator_1);
+								
+										JButton btnNewButton = new JButton("Laden");
+										panel.add(btnNewButton);
+										
+												progressBar = new JProgressBar();
+												panel.add(progressBar);
+										btnNewButton.addActionListener(new ActionListener() {
+											public void actionPerformed(ActionEvent e) {
+												loadCurrencies();
+											}
+										});
 	}
 
 	private void loadCurrencies() {
