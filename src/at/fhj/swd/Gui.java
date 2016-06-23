@@ -48,8 +48,6 @@ public class Gui {
 	private JComboBox<Currency> source_currency;
 	private JComboBox<Currency> target_currency;
 	private JTextField text;
-	private JSeparator separator;
-	private JSeparator separator_1;
 
 	/**
 	 * Launch the application.
@@ -82,49 +80,46 @@ public class Gui {
 		frmWhrungsrechner.setTitle("Währungsrechner 0.1");
 		frmWhrungsrechner.setBounds(100, 100, 450, 300);
 		frmWhrungsrechner.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frmWhrungsrechner.getContentPane().setLayout(new BorderLayout(0, 0));
 
 		JPanel panel = new JPanel();
 		frmWhrungsrechner.getContentPane().add(panel);
-						panel.setLayout(new GridLayout(0, 1, 0, 0));
-				
-						JLabel lblNewLabel = new JLabel("Währung:");
-						panel.add(lblNewLabel);
-						
-								source_currency = new JComboBox();
-								panel.add(source_currency);
-				
-						JLabel lblZielwhrung = new JLabel("Zielwährung:");
-						panel.add(lblZielwhrung);
-						
-								target_currency = new JComboBox();
-								target_currency.setModel(new DefaultComboBoxModel(new String[] {"                                                            "}));
-								panel.add(target_currency);
-						
-						separator = new JSeparator();
-						panel.add(separator);
-						
-						text = new JTextField();
-						text.setFont(new Font("Dialog", Font.PLAIN, 14));
-						text.setHorizontalAlignment(SwingConstants.CENTER);
-						text.setText("Laden Sie zuerst die aktuellen Umrechnungskurse.");
-						text.setEditable(false);
-						panel.add(text);
-						text.setColumns(10);
-										
-										separator_1 = new JSeparator();
-										panel.add(separator_1);
-								
-										JButton btnNewButton = new JButton("Laden");
-										panel.add(btnNewButton);
-										
-												progressBar = new JProgressBar();
-												panel.add(progressBar);
-										btnNewButton.addActionListener(new ActionListener() {
-											public void actionPerformed(ActionEvent e) {
-												loadCurrencies();
-											}
-										});
+		panel.setLayout(new GridLayout(0, 1, 0, 0));
+
+		JLabel lblNewLabel = new JLabel("Währung:");
+		panel.add(lblNewLabel);
+
+		source_currency = new JComboBox();
+		panel.add(source_currency);
+
+		JLabel lblZielwhrung = new JLabel("Zielwährung:");
+		panel.add(lblZielwhrung);
+
+		target_currency = new JComboBox();
+		panel.add(target_currency);
+
+		JSeparator separator = new JSeparator();
+		panel.add(separator);
+
+		text = new JTextField();
+		text.setFont(new Font("Dialog", Font.PLAIN, 14));
+		text.setHorizontalAlignment(SwingConstants.CENTER);
+		text.setText("Laden Sie zuerst die aktuellen Umrechnungskurse.");
+		text.setEditable(false);
+		panel.add(text);
+
+		JSeparator separator_1 = new JSeparator();
+		panel.add(separator_1);
+
+		JButton btnNewButton = new JButton("Laden");
+		panel.add(btnNewButton);
+
+		progressBar = new JProgressBar();
+		panel.add(progressBar);
+		btnNewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				loadCurrencies();
+			}
+		});
 	}
 
 	private void loadCurrencies() {
