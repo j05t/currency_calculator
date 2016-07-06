@@ -70,6 +70,7 @@ public class Gui {
 	 */
 	public Gui() {
 		initialize();
+		loadCurrencies();
 	}
 
 	/**
@@ -90,12 +91,26 @@ public class Gui {
 
 		source_currency = new JComboBox();
 		panel.add(source_currency);
-
+		source_currency.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				updateTargetCurrencies(((Currency) source_currency.getSelectedItem()).getShortName());	
+			}
+		});
+		
 		JLabel lblZielwhrung = new JLabel("Zielwährung:");
 		panel.add(lblZielwhrung);
 
 		target_currency = new JComboBox();
 		panel.add(target_currency);
+		target_currency.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				loadExchangeRates((Currency) source_currency.getSelectedItem());				
+			}
+		});
 
 		JSeparator separator = new JSeparator();
 		panel.add(separator);
@@ -110,14 +125,14 @@ public class Gui {
 		JSeparator separator_1 = new JSeparator();
 		panel.add(separator_1);
 
-		JButton btnNewButton = new JButton("Laden");
+		JButton btnNewButton = new JButton("Umrechnen");
 		panel.add(btnNewButton);
 
 		progressBar = new JProgressBar();
 		panel.add(progressBar);
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				loadCurrencies();
+				//TODO: Umrechnung
 			}
 		});
 	}
@@ -160,6 +175,32 @@ public class Gui {
 		};
 
 		worker.execute();
+	}
+	
+	private void loadExchangeRates(Currency selectedCurrency) {
+		// http://houston.fh-joanneum.at/sodev2/rates?baseCurrency=EUR
+		String baseCurrency = selectedCurrency.getShortName();
+
+		Thread t = new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				System.out.println("Ein " + baseCurrency + " sind ");
+			}
+		});
+		
+		t.start();
+	}
+	
+	private void updateTargetCurrencies(String selectedItem) {
+		target_currency.removeAllItems();
+		
+		for (int i=0; i < source_currency.getItemCount(); i++)
+			if (!source_currency.getItemAt(i).getShortName().equals(selectedItem))
+				target_currency.addItem(source_currency.getItemAt(i));
+		
+		target_currency.invalidate();
 	}
 
 }
