@@ -1,45 +1,27 @@
 package at.fhj.swd;
 
 import java.awt.EventQueue;
-
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import java.awt.BorderLayout;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 import java.awt.event.ActionEvent;
 import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
-
-import jdk.nashorn.api.scripting.URLReader;
-
 import javax.swing.JProgressBar;
 import javax.swing.SwingConstants;
-import javax.swing.DefaultComboBoxModel;
 import java.awt.GridLayout;
-import javax.swing.BoxLayout;
-import java.awt.CardLayout;
-import java.awt.FlowLayout;
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
-import java.awt.Window.Type;
-import javax.swing.GroupLayout;
-import javax.swing.GroupLayout.Alignment;
-import javax.swing.JTextArea;
-import javax.swing.JTextPane;
 import javax.swing.JSeparator;
 import java.awt.Font;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
 
 public class Gui {
 
@@ -47,7 +29,8 @@ public class Gui {
 	private JProgressBar progressBar;
 	private JComboBox<Currency> source_currency;
 	private JComboBox<Currency> target_currency;
-	private JTextField text;
+	private JTextField statusText;
+	private JTextField input;
 
 	/**
 	 * Launch the application.
@@ -83,11 +66,12 @@ public class Gui {
 		frmWhrungsrechner.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		JPanel panel = new JPanel();
+		panel.setBorder(new CompoundBorder(null, new EmptyBorder(6, 10, 10, 10)));
 		frmWhrungsrechner.getContentPane().add(panel);
 		panel.setLayout(new GridLayout(0, 1, 0, 0));
 
-		JLabel lblNewLabel = new JLabel("Währung:");
-		panel.add(lblNewLabel);
+		JLabel lblCurrency = new JLabel("Währung:");
+		panel.add(lblCurrency);
 
 		source_currency = new JComboBox();
 		panel.add(source_currency);
@@ -99,38 +83,45 @@ public class Gui {
 			}
 		});
 		
-		JLabel lblZielwhrung = new JLabel("Zielwährung:");
-		panel.add(lblZielwhrung);
+		JLabel lblTargetCurrency = new JLabel("Zielwährung:");
+		panel.add(lblTargetCurrency);
+				
+						target_currency = new JComboBox<Currency>();
+						panel.add(target_currency);
+						target_currency.addActionListener(new ActionListener() {
+							
+							@Override
+							public void actionPerformed(ActionEvent e) {
+								loadExchangeRates((Currency) source_currency.getSelectedItem());				
+							}
+						});
+		
+				JSeparator separator = new JSeparator();
+				panel.add(separator);
+				
+				JLabel lblAmount = new JLabel("Betrag:");
+				panel.add(lblAmount);
+				
+				input = new JTextField();
+				panel.add(input);
+				input.setColumns(10);
+		
+				JSeparator separator_1 = new JSeparator();
+				panel.add(separator_1);
 
-		target_currency = new JComboBox();
-		panel.add(target_currency);
-		target_currency.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				loadExchangeRates((Currency) source_currency.getSelectedItem());				
-			}
-		});
+		statusText = new JTextField();
+		statusText.setFont(new Font("Dialog", Font.PLAIN, 14));
+		statusText.setHorizontalAlignment(SwingConstants.CENTER);
+		statusText.setText("Laden Sie zuerst die aktuellen Umrechnungskurse.");
+		statusText.setEditable(false);
+		panel.add(statusText);
 
-		JSeparator separator = new JSeparator();
-		panel.add(separator);
-
-		text = new JTextField();
-		text.setFont(new Font("Dialog", Font.PLAIN, 14));
-		text.setHorizontalAlignment(SwingConstants.CENTER);
-		text.setText("Laden Sie zuerst die aktuellen Umrechnungskurse.");
-		text.setEditable(false);
-		panel.add(text);
-
-		JSeparator separator_1 = new JSeparator();
-		panel.add(separator_1);
-
-		JButton btnNewButton = new JButton("Umrechnen");
-		panel.add(btnNewButton);
+		JButton btnCalculate = new JButton("Umrechnen");
+		panel.add(btnCalculate);
 
 		progressBar = new JProgressBar();
 		panel.add(progressBar);
-		btnNewButton.addActionListener(new ActionListener() {
+		btnCalculate.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				//TODO: Umrechnung
 			}
