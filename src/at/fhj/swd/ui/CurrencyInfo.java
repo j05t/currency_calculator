@@ -1,10 +1,10 @@
-package at.fhj.swd;
+package at.fhj.swd.ui;
 
-public class Currency {
+public class CurrencyInfo {
 	private String shortName;
 	private String fullName;
 	
-	public Currency(String shortName, String fullName) {
+	public CurrencyInfo(String shortName, String fullName) {
 		setShortName(shortName);
 		setFullName(fullName);
 	}

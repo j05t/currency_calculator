@@ -21,14 +21,9 @@ public class CurrencyInfo {
 		this.displayName = displayName;
 	}
 	
-	
 	@Override
 	public String toString() {
 		return String.format("%s (%s)", getDisplayName(),getName());
 	}
-	
-	
-	
-
-	
+		
 }
