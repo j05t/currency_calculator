@@ -99,8 +99,9 @@ public class Gui {
 			public void actionPerformed(ActionEvent e) {
 				updateTargetCurrencies(((CurrencyInfo) source_currency.getSelectedItem()).getFullName());
 			}
+			
 		});
-
+		
 		JLabel lblTargetCurrency = new JLabel("Zielwährung:");
 		panel.add(lblTargetCurrency);
 
@@ -110,7 +111,7 @@ public class Gui {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				loadExchangeRates((CurrencyInfo) source_currency.getSelectedItem());
+				//loadExchangeRates((CurrencyInfo) source_currency.getSelectedItem());
 			}
 		});
 
@@ -139,6 +140,8 @@ public class Gui {
 	}
 
 	private void loadExchangeRates(CurrencyInfo selectedCurrency) {
+		if (target_currency == null) return;
+		
 		String baseCurrency = selectedCurrency.getShortName();
 		String targetCurrency = ((CurrencyInfo) target_currency.getSelectedItem()).getShortName();
 				
@@ -170,8 +173,6 @@ public class Gui {
 		for (int i = 0; i < source_currency.getItemCount(); i++)
 			if (!source_currency.getItemAt(i).getFullName().equals(selectedItem))
 				target_currency.addItem(source_currency.getItemAt(i));
-
-		//target_currency.invalidate();
 	}
 
 }
