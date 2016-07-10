@@ -5,16 +5,11 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
-import javax.swing.JButton;
 import java.awt.event.ActionListener;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.awt.event.ActionEvent;
 import javax.swing.JTextField;
-import javax.swing.SwingWorker;
 import javax.swing.JProgressBar;
 import javax.swing.SwingConstants;
 import java.awt.GridLayout;
@@ -23,9 +18,7 @@ import java.awt.Font;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 
-import at.fhj.swd.service.CurrencyInfo;
-
-import java.awt.Window.Type;
+import at.fhj.swd.service.CurService;
 
 public class Gui {
 
@@ -74,6 +67,7 @@ public class Gui {
 					source_currency.addItem(curInfo);
 
 				progressBar.setIndeterminate(false);
+				statusText.setText("Währungen geladen");
 			}
 		});
 
@@ -103,7 +97,7 @@ public class Gui {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				updateTargetCurrencies(((CurrencyInfo) source_currency.getSelectedItem()).getName());
+				updateTargetCurrencies(((CurrencyInfo) source_currency.getSelectedItem()).getFullName());
 			}
 		});
 
@@ -145,15 +139,25 @@ public class Gui {
 	}
 
 	private void loadExchangeRates(CurrencyInfo selectedCurrency) {
+		String baseCurrency = selectedCurrency.getShortName();
+		String targetCurrency = ((CurrencyInfo) target_currency.getSelectedItem()).getShortName();
+				
 		// http://houston.fh-joanneum.at/sodev2/rates?baseCurrency=EUR
-		String baseCurrency = selectedCurrency.getName();
-
+		curService.setApiUrl("http://houston.fh-joanneum.at/sodev2/rates?baseCurrency=" + baseCurrency);
+		
 		Thread t = new Thread(new Runnable() {
 
 			@Override
 			public void run() {
-				// TODO Auto-generated method stub
-				System.out.println("Ein " + baseCurrency + " sind ");
+				progressBar.setIndeterminate(true);
+				
+				Map<String,Float> map = curService.getRatesForCurrency(baseCurrency);
+				
+				if (map.containsKey(targetCurrency))
+					System.out.println("1 " + baseCurrency + " sind " + map.get(targetCurrency) + " " + targetCurrency);
+				
+				progressBar.setIndeterminate(false);
+				statusText.setText("Wechselkurse geladen");
 			}
 		});
 
@@ -164,10 +168,10 @@ public class Gui {
 		target_currency.removeAllItems();
 
 		for (int i = 0; i < source_currency.getItemCount(); i++)
-			if (!source_currency.getItemAt(i).getName().equals(selectedItem))
+			if (!source_currency.getItemAt(i).getFullName().equals(selectedItem))
 				target_currency.addItem(source_currency.getItemAt(i));
 
-		target_currency.invalidate();
+		//target_currency.invalidate();
 	}
 
 }

@@ -1,17 +1,17 @@
-package at.fhj.swd.ui;
+package at.fhj.swd.service;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 import javax.swing.SwingWorker;
 
-import at.fhj.swd.service.CurrencyInfo;
-import at.fhj.swd.service.CurrencyService;
+import at.fhj.swd.ui.CurrencyInfo;
 
 public class CurService implements CurrencyService {
 
@@ -49,8 +49,21 @@ public class CurService implements CurrencyService {
 
 	@Override
 	public Map<String, Float> getRatesForCurrency(String rate) {
-		// TODO Auto-generated method stub
-		return null;
+		Map<String,Float> map = new HashMap<String, Float>();
+		
+		String line = "";
+		// https://docs.oracle.com/javase/tutorial/essential/exceptions/tryResourceClose.html
+		try (BufferedReader br = new BufferedReader(
+				new InputStreamReader(new URL(endpoint).openStream()))) {
+			while ((line = br.readLine()) != null) {
+				String[] split = line.split(";");
+				map.put(split[0], Float.parseFloat(split[2]));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return map;
 	}
 
 }
