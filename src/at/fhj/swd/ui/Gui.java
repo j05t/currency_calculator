@@ -30,7 +30,8 @@ public class Gui {
 	private JTextField input;
 
 	private CurService curService;
-
+	private Float amount;
+	
 	/**
 	 * Launch the application.
 	 */
@@ -123,7 +124,18 @@ public class Gui {
 
 		input = new JTextField();
 		panel.add(input);
-		input.setColumns(10);
+		//input.setColumns(10);
+		input.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+try {
+	amount = Float.parseFloat(input.getText());
+} catch (Exception e2) {
+	statusText.setText("Ungültige Eingabe!");
+}				
+			}
+		});
 
 		JSeparator separator_1 = new JSeparator();
 		panel.add(separator_1);
