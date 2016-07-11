@@ -6,6 +6,8 @@ import javax.swing.JPanel;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.util.HashMap;
 import java.util.Map;
 import java.awt.event.ActionEvent;
@@ -31,7 +33,8 @@ public class Gui {
 
 	private CurService curService;
 	private Float amount;
-	
+	private boolean validInput = false;
+
 	/**
 	 * Launch the application.
 	 */
@@ -100,9 +103,9 @@ public class Gui {
 			public void actionPerformed(ActionEvent e) {
 				updateTargetCurrencies(((CurrencyInfo) source_currency.getSelectedItem()).getFullName());
 			}
-			
+
 		});
-		
+
 		JLabel lblTargetCurrency = new JLabel("Zielwährung:");
 		panel.add(lblTargetCurrency);
 
@@ -112,7 +115,8 @@ public class Gui {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				//loadExchangeRates((CurrencyInfo) source_currency.getSelectedItem());
+				if (validInput)
+					loadExchangeRates((CurrencyInfo) source_currency.getSelectedItem());
 			}
 		});
 
@@ -124,16 +128,30 @@ public class Gui {
 
 		input = new JTextField();
 		panel.add(input);
-		//input.setColumns(10);
-		input.addActionListener(new ActionListener() {
-			
+
+		input.addKeyListener(new KeyListener() {
+
 			@Override
-			public void actionPerformed(ActionEvent e) {
-try {
-	amount = Float.parseFloat(input.getText());
-} catch (Exception e2) {
-	statusText.setText("Ungültige Eingabe!");
-}				
+			public void keyTyped(KeyEvent e) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void keyReleased(KeyEvent e) {
+				try {
+					amount = Float.parseFloat(input.getText());
+					validInput = true;
+				} catch (Exception e2) {
+					statusText.setText("Ungültige Eingabe!");
+					validInput = false;
+				}
+			}
+
+			@Override
+			public void keyPressed(KeyEvent e) {
+				// TODO Auto-generated method stub
+
 			}
 		});
 
@@ -152,25 +170,26 @@ try {
 	}
 
 	private void loadExchangeRates(CurrencyInfo selectedCurrency) {
-		if (target_currency == null) return;
-		
+		if (target_currency == null)
+			return;
+
 		String baseCurrency = selectedCurrency.getShortName();
 		String targetCurrency = ((CurrencyInfo) target_currency.getSelectedItem()).getShortName();
-				
+
 		// http://houston.fh-joanneum.at/sodev2/rates?baseCurrency=EUR
 		curService.setApiUrl("http://houston.fh-joanneum.at/sodev2/rates?baseCurrency=" + baseCurrency);
-		
+
 		Thread t = new Thread(new Runnable() {
 
 			@Override
 			public void run() {
 				progressBar.setIndeterminate(true);
-				
-				Map<String,Float> map = curService.getRatesForCurrency(baseCurrency);
-				
-				if (map.containsKey(targetCurrency))
-					System.out.println("1 " + baseCurrency + " sind " + map.get(targetCurrency) + " " + targetCurrency);
-				
+
+				Map<String, Float> map = curService.getRatesForCurrency(baseCurrency);
+
+				if (validInput && map.containsKey(targetCurrency))
+					System.out.println(amount + " " + baseCurrency + " sind " + map.get(targetCurrency) * amount + " " + targetCurrency);
+
 				progressBar.setIndeterminate(false);
 				statusText.setText("Wechselkurse geladen");
 			}
