@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import at.fhj.swd.ui.CurrencyInfo;
+import at.fhj.swd.service.CurrencyInfo;
 
 public class CSVCurrencyService implements CurrencyService {
 
@@ -36,14 +36,14 @@ public class CSVCurrencyService implements CurrencyService {
 				list.add(new CurrencyInfo(split[0], split[1]));
 			}
 		} catch (Exception e) {
-			throw new CurrencyServiceException("Error retrieving exchange rates", e);
+			throw new CurrencyServiceException("Error retrieving currency info", e);
 		}
 
 		return list;
 	}
 
 	@Override
-	public Map<String, Float> getRatesForCurrency(String rate) {
+	public Map<String, Float> getRatesForCurrency(String rate) throws CurrencyServiceException {
 		Map<String, Float> map = new HashMap<String, Float>();
 		String line = "";
 
@@ -54,7 +54,7 @@ public class CSVCurrencyService implements CurrencyService {
 				map.put(split[0], Float.parseFloat(split[2]));
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw new CurrencyServiceException("Error retrieving exchange rates", e);
 		}
 
 		return map;

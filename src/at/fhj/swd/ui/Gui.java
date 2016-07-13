@@ -21,6 +21,7 @@ import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 
 import at.fhj.swd.service.CSVCurrencyService;
+import at.fhj.swd.service.CurrencyInfo;
 import at.fhj.swd.service.CurrencyService;
 import at.fhj.swd.service.CurrencyServiceException;
 
@@ -120,7 +121,7 @@ public class Gui {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				updateTargetCurrencies(((CurrencyInfo) source_currency.getSelectedItem()).getFullName());
+				updateTargetCurrencies(((CurrencyInfo) source_currency.getSelectedItem()).getName());
 				loadExchangeRates();
 			}
 
@@ -197,7 +198,7 @@ public class Gui {
 		if (source_currency.getSelectedItem() == null)
 			return;
 
-		String baseCurrency = ((CurrencyInfo) source_currency.getSelectedItem()).getShortName();
+		String baseCurrency = ((CurrencyInfo) source_currency.getSelectedItem()).getName();
 
 		// http://houston.fh-joanneum.at/sodev2/rates?baseCurrency=EUR
 		curService.setApiUrl("http://houston.fh-joanneum.at/sodev2/rates?baseCurrency=" + baseCurrency);
@@ -207,7 +208,12 @@ public class Gui {
 			@Override
 			public void run() {
 				updateProgress(true, "Lade Wechselkurse");
-				exchangeRates = curService.getRatesForCurrency(baseCurrency);
+				try {
+					exchangeRates = curService.getRatesForCurrency(baseCurrency);
+				} catch (CurrencyServiceException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				updateProgress(false, "Wechselkurse geladen, Zielwährung wählen");
 			}
 		});
@@ -219,7 +225,7 @@ public class Gui {
 		target_currency.removeAllItems();
 
 		for (int i = 0; i < source_currency.getItemCount(); i++)
-			if (!source_currency.getItemAt(i).getFullName().equals(selectedItem))
+			if (!source_currency.getItemAt(i).getName().equals(selectedItem))
 				target_currency.addItem(source_currency.getItemAt(i));
 	}
 
@@ -228,8 +234,8 @@ public class Gui {
 				|| ((CurrencyInfo) target_currency.getSelectedItem()) == null)
 			return;
 
-		String baseCurrency = ((CurrencyInfo) source_currency.getSelectedItem()).getShortName();
-		String targetCurrency = ((CurrencyInfo) target_currency.getSelectedItem()).getShortName();
+		String baseCurrency = ((CurrencyInfo) source_currency.getSelectedItem()).getName();
+		String targetCurrency = ((CurrencyInfo) target_currency.getSelectedItem()).getName();
 
 		if (exchangeRates.containsKey(targetCurrency))
 			statusText.setText(amount + " " + baseCurrency + " sind " + exchangeRates.get(targetCurrency) * amount + " "
