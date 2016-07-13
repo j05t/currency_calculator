@@ -20,7 +20,8 @@ import java.awt.Font;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 
-import at.fhj.swd.service.CurService;
+import at.fhj.swd.service.CSVCurrencyService;
+import at.fhj.swd.service.CurrencyService;
 
 public class Gui {
 
@@ -32,7 +33,7 @@ public class Gui {
 	private JTextField input;
 	private Map<String, Float> exchangeRates;
 
-	private CurService curService;
+	private CurrencyService curService;
 	private Float amount;
 	private boolean validInput = false;
 
@@ -58,7 +59,7 @@ public class Gui {
 	 */
 	public Gui() {
 		initialize();
-		curService = new CurService();
+		curService = new CSVCurrencyService();
 	}
 
 	private void updateProgress(boolean inProgress, String status) {

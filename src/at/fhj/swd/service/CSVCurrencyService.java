@@ -10,7 +10,7 @@ import java.util.Map;
 
 import at.fhj.swd.ui.CurrencyInfo;
 
-public class CurService implements CurrencyService {
+public class CSVCurrencyService implements CurrencyService {
 
 	private String endpoint;
 
