@@ -8,12 +8,12 @@ import javax.swing.JLabel;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.util.HashMap;
 import java.util.Map;
 import java.awt.event.ActionEvent;
 import javax.swing.JTextField;
 import javax.swing.JProgressBar;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import java.awt.GridLayout;
 import javax.swing.JSeparator;
 import java.awt.Font;
@@ -30,6 +30,7 @@ public class Gui {
 	private JComboBox<CurrencyInfo> target_currency;
 	private JTextField statusText;
 	private JTextField input;
+	private Map<String, Float> exchangeRates;
 
 	private CurService curService;
 	private Float amount;
@@ -60,18 +61,26 @@ public class Gui {
 		curService = new CurService();
 	}
 
+	private void updateProgress(boolean inProgress, String status) {
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				progressBar.setIndeterminate(inProgress);
+				statusText.setText(status);
+			}
+		});
+	}
+
 	private void loadCurrencies() {
 		curService.setApiUrl("http://houston.fh-joanneum.at/sodev2/currencies");
 		Thread t = new Thread(new Runnable() {
 
 			@Override
 			public void run() {
-				progressBar.setIndeterminate(true);
+				updateProgress(true, "Lade Währungen");
 				for (CurrencyInfo curInfo : curService.getCurrencies())
 					source_currency.addItem(curInfo);
 
-				progressBar.setIndeterminate(false);
-				statusText.setText("Währungen geladen");
+				updateProgress(false, "Währungen geladen, Quellwährung wählen");
 			}
 		});
 
@@ -102,6 +111,7 @@ public class Gui {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				updateTargetCurrencies(((CurrencyInfo) source_currency.getSelectedItem()).getFullName());
+				loadExchangeRates();
 			}
 
 		});
@@ -115,8 +125,7 @@ public class Gui {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (validInput)
-					loadExchangeRates((CurrencyInfo) source_currency.getSelectedItem());
+				outputExchangeRate();
 			}
 		});
 
@@ -142,6 +151,7 @@ public class Gui {
 				try {
 					amount = Float.parseFloat(input.getText());
 					validInput = true;
+					outputExchangeRate();
 				} catch (Exception e2) {
 					statusText.setText("Ungültige Eingabe!");
 					validInput = false;
@@ -161,7 +171,6 @@ public class Gui {
 		statusText = new JTextField();
 		statusText.setFont(new Font("Dialog", Font.PLAIN, 14));
 		statusText.setHorizontalAlignment(SwingConstants.CENTER);
-		statusText.setText("Lade verfügbare Währungen..");
 		statusText.setEditable(false);
 		panel.add(statusText);
 
@@ -169,12 +178,11 @@ public class Gui {
 		panel.add(progressBar);
 	}
 
-	private void loadExchangeRates(CurrencyInfo selectedCurrency) {
-		if (target_currency == null)
+	private void loadExchangeRates() {
+		if (source_currency.getSelectedItem() == null)
 			return;
 
-		String baseCurrency = selectedCurrency.getShortName();
-		String targetCurrency = ((CurrencyInfo) target_currency.getSelectedItem()).getShortName();
+		String baseCurrency = ((CurrencyInfo) source_currency.getSelectedItem()).getShortName();
 
 		// http://houston.fh-joanneum.at/sodev2/rates?baseCurrency=EUR
 		curService.setApiUrl("http://houston.fh-joanneum.at/sodev2/rates?baseCurrency=" + baseCurrency);
@@ -183,15 +191,9 @@ public class Gui {
 
 			@Override
 			public void run() {
-				progressBar.setIndeterminate(true);
-
-				Map<String, Float> map = curService.getRatesForCurrency(baseCurrency);
-
-				if (validInput && map.containsKey(targetCurrency))
-					System.out.println(amount + " " + baseCurrency + " sind " + map.get(targetCurrency) * amount + " " + targetCurrency);
-
-				progressBar.setIndeterminate(false);
-				statusText.setText("Wechselkurse geladen");
+				updateProgress(true, "Lade Wechselkurse");
+				exchangeRates = curService.getRatesForCurrency(baseCurrency);
+				updateProgress(false, "Wechselkurse geladen, Zielwährung wählen");
 			}
 		});
 
@@ -204,6 +206,19 @@ public class Gui {
 		for (int i = 0; i < source_currency.getItemCount(); i++)
 			if (!source_currency.getItemAt(i).getFullName().equals(selectedItem))
 				target_currency.addItem(source_currency.getItemAt(i));
+	}
+
+	private void outputExchangeRate() {
+		if (!validInput || exchangeRates == null || target_currency == null
+				|| ((CurrencyInfo) target_currency.getSelectedItem()) == null)
+			return;
+
+		String baseCurrency = ((CurrencyInfo) source_currency.getSelectedItem()).getShortName();
+		String targetCurrency = ((CurrencyInfo) target_currency.getSelectedItem()).getShortName();
+
+		if (exchangeRates.containsKey(targetCurrency))
+			statusText.setText(amount + " " + baseCurrency + " sind " + exchangeRates.get(targetCurrency) * amount + " "
+					+ targetCurrency);
 	}
 
 }
