@@ -9,6 +9,6 @@ public interface CurrencyService {
 	String getApiUrl();
 	void setApiUrl(String endpoint);
 	
-	List<CurrencyInfo> getCurrencies();
+	List<CurrencyInfo> getCurrencies() throws CurrencyServiceException;
 	Map<String, Float> getRatesForCurrency(String rate);
 }

@@ -22,6 +22,7 @@ import javax.swing.border.EmptyBorder;
 
 import at.fhj.swd.service.CSVCurrencyService;
 import at.fhj.swd.service.CurrencyService;
+import at.fhj.swd.service.CurrencyServiceException;
 
 public class Gui {
 
@@ -65,6 +66,9 @@ public class Gui {
 	private void updateProgress(boolean inProgress, String status) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
+				source_currency.setEnabled(!inProgress);
+				target_currency.setEnabled(!inProgress);
+				
 				progressBar.setIndeterminate(inProgress);
 				statusText.setText(status);
 			}
@@ -78,8 +82,13 @@ public class Gui {
 			@Override
 			public void run() {
 				updateProgress(true, "Lade Währungen");
-				for (CurrencyInfo curInfo : curService.getCurrencies())
-					source_currency.addItem(curInfo);
+				try {
+					for (CurrencyInfo curInfo : curService.getCurrencies())
+						source_currency.addItem(curInfo);
+				} catch (CurrencyServiceException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 
 				updateProgress(false, "Währungen geladen, Quellwährung wählen");
 			}
@@ -94,7 +103,7 @@ public class Gui {
 	private void initialize() {
 		frmWhrungsrechner = new JFrame();
 		frmWhrungsrechner.setTitle("Währungsrechner 0.1");
-		frmWhrungsrechner.setBounds(100, 100, 450, 300);
+		frmWhrungsrechner.setBounds(100, 100, 360, 300);
 		frmWhrungsrechner.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		JPanel panel = new JPanel();
@@ -126,6 +135,7 @@ public class Gui {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				checkInput();
 				outputExchangeRate();
 			}
 		});
@@ -137,6 +147,7 @@ public class Gui {
 		panel.add(lblAmount);
 
 		input = new JTextField();
+		input.setText("1");
 		panel.add(input);
 
 		input.addKeyListener(new KeyListener() {
@@ -144,25 +155,16 @@ public class Gui {
 			@Override
 			public void keyTyped(KeyEvent e) {
 				// TODO Auto-generated method stub
-
 			}
 
 			@Override
 			public void keyReleased(KeyEvent e) {
-				try {
-					amount = Float.parseFloat(input.getText());
-					validInput = true;
-					outputExchangeRate();
-				} catch (Exception e2) {
-					statusText.setText("Ungültige Eingabe!");
-					validInput = false;
-				}
+				checkInput();
 			}
 
 			@Override
 			public void keyPressed(KeyEvent e) {
 				// TODO Auto-generated method stub
-
 			}
 		});
 
@@ -177,6 +179,18 @@ public class Gui {
 
 		progressBar = new JProgressBar();
 		panel.add(progressBar);
+	}
+	
+	
+	private void checkInput() {
+		try {
+			amount = Float.parseFloat(input.getText());
+			validInput = true;
+			outputExchangeRate();
+		} catch (Exception e) {
+			statusText.setText("Ungültige Eingabe!");
+			validInput = false;
+		}				
 	}
 
 	private void loadExchangeRates() {

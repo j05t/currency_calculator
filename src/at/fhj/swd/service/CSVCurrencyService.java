@@ -25,7 +25,7 @@ public class CSVCurrencyService implements CurrencyService {
 	}
 
 	@Override
-	public List<CurrencyInfo> getCurrencies() {
+	public List<CurrencyInfo> getCurrencies() throws CurrencyServiceException {
 		List<CurrencyInfo> list = new ArrayList<CurrencyInfo>();
 		String line = "";
 
@@ -36,7 +36,7 @@ public class CSVCurrencyService implements CurrencyService {
 				list.add(new CurrencyInfo(split[0], split[1]));
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw new CurrencyServiceException("Error retrieving exchange rates", e);
 		}
 
 		return list;
