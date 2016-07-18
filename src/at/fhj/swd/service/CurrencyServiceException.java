@@ -1,6 +1,6 @@
 package at.fhj.swd.service;
 
-public class CurrencyServiceException extends Exception {
+public class CurrencyServiceException extends RuntimeException {
 
 	public CurrencyServiceException(String message) {
 		super(message);

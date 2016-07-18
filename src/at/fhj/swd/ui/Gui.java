@@ -69,7 +69,7 @@ public class Gui {
 			public void run() {
 				source_currency.setEnabled(!inProgress);
 				target_currency.setEnabled(!inProgress);
-				
+
 				progressBar.setIndeterminate(inProgress);
 				statusText.setText(status);
 			}
@@ -87,7 +87,6 @@ public class Gui {
 					for (CurrencyInfo curInfo : curService.getCurrencies())
 						source_currency.addItem(curInfo);
 				} catch (CurrencyServiceException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 
@@ -155,7 +154,6 @@ public class Gui {
 
 			@Override
 			public void keyTyped(KeyEvent e) {
-				// TODO Auto-generated method stub
 			}
 
 			@Override
@@ -165,7 +163,6 @@ public class Gui {
 
 			@Override
 			public void keyPressed(KeyEvent e) {
-				// TODO Auto-generated method stub
 			}
 		});
 
@@ -181,8 +178,7 @@ public class Gui {
 		progressBar = new JProgressBar();
 		panel.add(progressBar);
 	}
-	
-	
+
 	private void checkInput() {
 		try {
 			amount = Float.parseFloat(input.getText());
@@ -191,7 +187,7 @@ public class Gui {
 		} catch (Exception e) {
 			statusText.setText("Ungültige Eingabe!");
 			validInput = false;
-		}				
+		}
 	}
 
 	private void loadExchangeRates() {
@@ -211,7 +207,6 @@ public class Gui {
 				try {
 					exchangeRates = curService.getRatesForCurrency(baseCurrency);
 				} catch (CurrencyServiceException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				updateProgress(false, "Wechselkurse geladen, Zielwährung wählen");
