@@ -91,6 +91,7 @@ public class Gui {
 				}
 
 				updateProgress(false, "Währungen geladen, Quellwährung wählen");
+				updateTargetCurrencies();
 			}
 		});
 
@@ -120,7 +121,7 @@ public class Gui {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				updateTargetCurrencies(((CurrencyInfo) source_currency.getSelectedItem()).getName());
+				updateTargetCurrencies();
 				loadExchangeRates();
 			}
 
@@ -136,7 +137,6 @@ public class Gui {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				checkInput();
-				outputExchangeRate();
 			}
 		});
 
@@ -216,7 +216,9 @@ public class Gui {
 		t.start();
 	}
 
-	private void updateTargetCurrencies(String selectedItem) {
+	private void updateTargetCurrencies() {
+		String selectedItem = ((CurrencyInfo) source_currency.getSelectedItem()).getName();
+
 		target_currency.removeAllItems();
 
 		for (int i = 0; i < source_currency.getItemCount(); i++)
